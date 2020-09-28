@@ -3,16 +3,15 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.5
 
 Window {
-    width: 640
-    height: 480
+    width: client.windowWidth
+    height: client.windowHeight
     visible: true
     title: qsTr("Hello World")
 
     Rectangle {
         anchors.fill: parent
         TextArea {
-            //placeholderText: "Nothing yet"
-            text: client.statusLabel
+            text: client.receivedFromSever
         }
     }
 }

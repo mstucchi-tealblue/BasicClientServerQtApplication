@@ -34,5 +34,9 @@ int main(int argc, char *argv[])
     mServer->heightChangedHandler(window->height());
     });
 
+    QObject::connect(window, &QQuickWindow::widthChanged, [&](){
+    mServer->widthChangedHandler(window->width());
+    });
+
     return app.exec();
 }

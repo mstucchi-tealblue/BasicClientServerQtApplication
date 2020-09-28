@@ -12,21 +12,59 @@ client::client(QObject *parent) : QObject(parent)
 
 void client::readWelcome()
 {
-    setStatusLabel(socket->readAll());
-    qDebug() << statusLabel;
+    setReceivedFromServer(socket->readAll());
+    qDebug() << receivedFromSever;
 }
 
-QString client::getStatusLabel()
+qint64 client::getWindowWidth() const
 {
-    qDebug() << "Call get went fine";
-    return statusLabel;
+    return windowWidth;
 }
 
-void client::setStatusLabel(const QString sl)
+void client::setWindowWidth(const qint64 &value)
 {
-    if (sl != statusLabel) {
-        statusLabel = sl;
-        emit statusLabelChanged();
+    windowWidth = value;
+    emit windowWidthChanged();
+}
+
+qint64 client::getWindowHeight() const
+{
+    return windowHeight;
+}
+
+void client::setWindowHeight(const qint64 &value)
+{
+    windowHeight = value;
+    emit windowHeightChanged();
+}
+
+QString client::getReceivedFromServer()
+{
+    return receivedFromSever;
+}
+
+void client::setReceivedFromServer(QString fromServer)
+{
+    qDebug() << typeid(fromServer).name();
+
+    //if(fromServer.length()>=1 && fromServer.length()<=3)
+    if(fromServer.at(0) == "h")
+    {
+        fromServer.remove(0,1);
+        setWindowHeight(fromServer.toInt());
+        return;
+    }
+
+    if(fromServer.at(0) == "w")
+    {
+        fromServer.remove(0,1);
+        setWindowWidth(fromServer.toInt());
+        return;
+    }
+
+    if (fromServer != receivedFromSever) {
+        receivedFromSever = fromServer;
+        emit receivedFromServerChanged();
     }
 }
 

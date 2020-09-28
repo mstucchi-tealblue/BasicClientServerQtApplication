@@ -1,5 +1,6 @@
 #include "server.h"
 
+
 server::server(QObject *parent) : QObject(parent)
 {
     mServer = new QLocalServer(this);
@@ -36,16 +37,42 @@ void server::sendHello()
     clientConnection->flush();
 }
 
+qint64 server::getWindowWidth() const
+{
+    return windowWidth;
+}
+
+void server::setWindowWidth(qint64 value)
+{
+    windowWidth = value;
+    emit windowHeightChanged();
+}
+
 void server::heightChangedHandler(int height)
 {
     setWindowHeight(height);
-    if(windowHeight==height || windowHeight<height-20)
-    {
-        clientConnection->write("Altezza trasmessa");
-        clientConnection->flush();
-    }
 
+    QByteArray qByteHeight;
+    QByteArray qBytePrefix;
 
+    qByteHeight.setNum(height);
+    qBytePrefix = "h";
+    clientConnection->write(qBytePrefix + qByteHeight);
+    clientConnection->flush();
+
+}
+
+void server::widthChangedHandler(int width)
+{
+    setWindowWidth(width);
+
+    QByteArray qByteWidth;
+    QByteArray qBytePrefix;
+
+    qByteWidth.setNum(width);
+    qBytePrefix = "w";
+    clientConnection->write(qBytePrefix + qByteWidth);
+    clientConnection->flush();
 }
 
 qint64 server::getWindowHeight() const
@@ -55,7 +82,7 @@ qint64 server::getWindowHeight() const
 }
 
 void server::setWindowHeight(qint64 value)
-{
+{    
     if (value != windowHeight) {
         windowHeight = value;
         emit windowHeightChanged();
