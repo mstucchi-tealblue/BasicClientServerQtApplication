@@ -21,8 +21,8 @@ server::server(QObject *parent) : QObject(parent)
 void server::sendWelcome()
 {
     clientConnection = mServer->nextPendingConnection();
-//    connect(clientConnection, &QLocalSocket::disconnected,
-//            clientConnection, &QLocalSocket::deleteLater);
+    //    connect(clientConnection, &QLocalSocket::disconnected,
+    //            clientConnection, &QLocalSocket::deleteLater);
 
     clientConnection->write("Welcome client");
     clientConnection->flush();
@@ -35,3 +35,31 @@ void server::sendHello()
     clientConnection->write("Hello client");
     clientConnection->flush();
 }
+
+void server::heightChangedHandler(int height)
+{
+    setWindowHeight(height);
+    if(windowHeight==height || windowHeight<height-20)
+    {
+        clientConnection->write("Altezza trasmessa");
+        clientConnection->flush();
+    }
+
+
+}
+
+qint64 server::getWindowHeight() const
+{
+    qDebug() << "get went fine " ;
+    return windowHeight;
+}
+
+void server::setWindowHeight(qint64 value)
+{
+    if (value != windowHeight) {
+        windowHeight = value;
+        emit windowHeightChanged();
+    }
+}
+
+

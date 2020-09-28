@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include "server.h"
 
 int main(int argc, char *argv[])
@@ -9,11 +10,11 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    server server;
+    server *mServer = new server(&app);
 
     QQmlApplicationEngine engine;
     QQmlContext* context = engine.rootContext();
-    context->setContextProperty("server",&server);
+    context->setContextProperty("server",mServer);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -22,6 +23,16 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    auto topLevelObject = engine.rootObjects().value(0);
+    auto window = qobject_cast<QQuickWindow *>(topLevelObject);
+    window->show();
+
+    qDebug() << window->width() << window->height();
+
+    QObject::connect(window, &QQuickWindow::heightChanged, [&](){
+    mServer->heightChangedHandler(window->height());
+    });
 
     return app.exec();
 }
